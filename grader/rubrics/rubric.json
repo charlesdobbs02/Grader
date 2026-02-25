@@ -1,0 +1,157 @@
+[
+  {
+    "Assignment_Type": "Written Assignment",
+    "Criteria": [
+      {
+        "Name": "Content & Analysis",
+        "Max_Points": 40,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 40, "Grading_Criteria": "Complete mastery of topic with in-depth analysis and originality. Addresses all key issues, applies relevant models, integrates evidence, and proposes well-justified solutions."},
+          {"Name": "Accomplished", "Points": 30, "Grading_Criteria": "Solid understanding with some analysis/originality. Addresses most issues and models, but depth/integration uneven. Solutions reasonable but not fully developed."},
+          {"Name": "Developing", "Points": 20, "Grading_Criteria": "Limited understanding and minimal analysis. Misses key issues, weak use of models/evidence, incomplete solutions."},
+          {"Name": "Beginning", "Points": 10, "Grading_Criteria": "Little to no understanding; summary only, no analysis or models, no viable solutions."}
+        ]
+      },
+      {
+        "Name": "Application of Data, Models & Evidence",
+        "Max_Points": 20,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 20, "Grading_Criteria": "Effectively integrates data, charts, graphs, or forecasting models. Evidence is clearly explained and supports conclusions. Strong analytical skills shown."},
+          {"Name": "Accomplished", "Points": 15, "Grading_Criteria": "Includes relevant data/models, but explanation or integration is partial. Some evidence underdeveloped."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Uses limited or generic evidence. Models/data poorly explained or loosely connected."},
+          {"Name": "Beginning", "Points": 5, "Grading_Criteria": "No meaningful use of data, models, or evidence."}
+        ]
+      },
+      {
+        "Name": "Organization & APA Formatting",
+        "Max_Points": 20,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 20, "Grading_Criteria": "Clear organization with strong logic/flow. Well-structured sections with effective headings. APA 7th followed without errors."},
+          {"Name": "Accomplished", "Points": 15, "Grading_Criteria": "Organization clear but minor lapses in flow/structure. Few APA errors."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Organization uneven/confusing. Frequent APA errors."},
+          {"Name": "Beginning", "Points": 5, "Grading_Criteria": "Paper poorly organized, difficult to follow. APA not observed."}
+        ]
+      },
+      {
+        "Name": "Critical Thinking & Evaluation",
+        "Max_Points": 10,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 10, "Grading_Criteria": "Provides thoughtful evaluation of findings, discusses implications, and offers well-supported recommendations. Questions assumptions and suggests improvements."},
+          {"Name": "Accomplished", "Points": 7.5, "Grading_Criteria": "Some evaluation and recommendations, but limited depth. Recommendations may be generic."},
+          {"Name": "Developing", "Points": 5, "Grading_Criteria": "Limited evaluation; more summary than analysis. Weak/vague recommendations."},
+          {"Name": "Beginning", "Points": 2.5, "Grading_Criteria": "No evaluation or recommendations."}
+        ]
+      },
+      {
+        "Name": "Grammar and Spelling",
+        "Max_Points": 10,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 10, "Grading_Criteria": "The written assignment is free of grammatical and spelling errors."},
+          {"Name": "Accomplished", "Points": 7.5, "Grading_Criteria": "The written assignment contains few grammatical and/or spelling errors."},
+          {"Name": "Developing", "Points": 5, "Grading_Criteria": "The written assignment contains multiple grammatical and/or spelling errors."},
+          {"Name": "Beginning", "Points": 2.5, "Grading_Criteria": "The written assignment has numerous grammar and/or spelling errors. The document is difficult to read."}
+        ]
+      }
+    ]
+  },
+  {
+    "Assignment_Type": "PowerPoint",
+    "Criteria": [
+      {
+        "Name": "Content & Analysis",
+        "Max_Points": 20,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 20, "Grading_Criteria": "Presentation demonstrates mastery of the case study with in-depth analysis and originality. Key issues are clearly identified, models/data are applied appropriately, and implications/recommendations are well supported."},
+          {"Name": "Accomplished", "Points": 15, "Grading_Criteria": "Presentation covers most key issues with some analysis and originality. Some evidence/models applied, though depth is uneven. Recommendations are reasonable but may lack full support."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Presentation includes limited analysis. Key issues are touched on but underdeveloped. Weak or generic application of evidence/models. Recommendations vague."},
+          {"Name": "Beginning", "Points": 5, "Grading_Criteria": "Presentation shows little understanding of the case. Content is superficial, inaccurate, or off topic. No meaningful recommendations."}
+        ]
+      },
+      {
+        "Name": "Use of Data, Visuals & Evidence",
+        "Max_Points": 20,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 20, "Grading_Criteria": "Data, charts, or visuals are accurate, clearly explained, and effectively integrated into the presentation. Visuals enhance understanding and support conclusions."},
+          {"Name": "Accomplished", "Points": 15, "Grading_Criteria": "Data/visuals are relevant, but explanation or integration is partial. Visuals may not fully support conclusions."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Minimal or generic use of data/visuals. Integration into the presentation is weak or unclear"},
+          {"Name": "Beginning", "Points": 5, "Grading_Criteria": "No use of data/visuals, or visuals are irrelevant/confusing."}
+        ]
+      },
+      {
+        "Name": "Organization",
+        "Max_Points": 20,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 20, "Grading_Criteria": "Presentation is well-organized, logical, and easy to follow. Strong introduction, transitions, and conclusion. Visual aids (slides, structure) enhance clarity."},
+          {"Name": "Accomplished", "Points": 15, "Grading_Criteria": "Organization is clear overall, with minor lapses in flow or structure. Visual aids generally support clarity."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Minimal or generic use of data/visuals. Integration into the presentation is weak or unclear."},
+          {"Name": "Beginning", "Points": 5, "Grading_Criteria": "Presentation is disorganized and difficult to follow. Visual aids absent or ineffective."}
+        ]
+      },
+      {
+        "Name": "Formatting & Professionalism",
+        "Max_Points": 20,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 20, "Grading_Criteria": "Font formatting (color bold, italic) has been carefully planned to enhance readability and content"},
+          {"Name": "Accomplished", "Points": 15, "Grading_Criteria": "Font formatting (color bold, italic) has been carefully planned to enhance readability."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Font formatting (color bold, italic) has been carefully planned to complement the content. However a little hard to read."},
+          {"Name": "Beginning", "Points": 5, "Grading_Criteria": "Font formatting makes it very difficult to read the material."}
+        ]
+      },
+      {
+        "Name": "Length",
+        "Max_Points": 20,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 20, "Grading_Criteria": "Meets slide requirement and includes video or speaker notes (depending on assignment)."},
+          {"Name": "Accomplished", "Points": 15, "Grading_Criteria": "Close to target length; included video or speaker notes (depending on assignment)."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "PowerPoint exceeded slide requirement; did not included video or speaker notes (depending on assignment)."},
+          {"Name": "Beginning", "Points": 5, "Grading_Criteria": "Did not meet slide requirement and did not include video or speaker notes (depending on assignment)."}
+        ]
+      }
+    ]
+  },
+  {
+    "Assignment_Type": "Video",
+    "Criteria": [
+      {
+        "Name": "Content & Analysis",
+        "Max_Points": 25,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 25, "Grading_Criteria": "Presentation demonstrates mastery of the case study with in-depth analysis and originality. Key issues are clearly identified, models/data are applied appropriately, and implications/recommendations are well supported."},
+          {"Name": "Accomplished", "Points": 17.5, "Grading_Criteria": "Presentation covers most key issues with some analysis and originality. Some evidence/models applied, though depth is uneven. Recommendations are reasonable but may lack full support."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Presentation includes limited analysis. Key issues are touched on but underdeveloped. Weak or generic application of evidence/models. Recommendations vague."},
+          {"Name": "Beginning", "Points": 2.5, "Grading_Criteria": "Presentation shows little understanding of the case. Content is superficial, inaccurate, or off topic. No meaningful recommendations."}
+        ]
+      },
+      {
+        "Name": "Organization",
+        "Max_Points": 25,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 25, "Grading_Criteria": "Presentation is well-organized, logical, and easy to follow. Strong introduction, transitions, and conclusion."},
+          {"Name": "Accomplished", "Points": 17.5, "Grading_Criteria": "Organization is clear overall, with minor lapses in flow or structure."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Organization is uneven or confusing at times. Lacked clarity or consistency."},
+          {"Name": "Beginning", "Points": 2.5, "Grading_Criteria": "Presentation is disorganized and difficult to follow."}
+        ]
+      },
+      {
+        "Name": "Delivery & Professionalism",
+        "Max_Points": 25,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 25, "Grading_Criteria": "Presenter communicates in a confident, professional, and engaging manner. Voice is clear, pace appropriate, and narration is strong. Very few filler words."},
+          {"Name": "Accomplished", "Points": 17.5, "Grading_Criteria": "Presenter speaks clearly, with some confidence and engagement. Some filler words or pacing issues, but message is understandable."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Delivery is inconsistent, with frequent filler words, unclear articulation, or distracting mannerisms."},
+          {"Name": "Beginning", "Points": 2.5, "Grading_Criteria": "Presenter is unprepared or disengaged. Delivery unclear, rushed, or inaudible."}
+        ]
+      },
+      {
+        "Name": "Length",
+        "Max_Points": 25,
+        "Performance_Levels": [
+          {"Name": "Exemplary", "Points": 25, "Grading_Criteria": "Meets required time (e.g., 5–7 minutes) Content thorough but not rushed."},
+          {"Name": "Accomplished", "Points": 17.5, "Grading_Criteria": "Close to target length; pacing is mostly appropriate."},
+          {"Name": "Developing", "Points": 10, "Grading_Criteria": "Too short or too long; pacing uneven. Content lacks appropriate depth for time allotted."},
+          {"Name": "Beginning", "Points": 2.5, "Grading_Criteria": "Did not meet required time (e.g., 5–7 minutes)."}
+        ]
+      }
+    ]
+  }
+]
