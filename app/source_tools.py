@@ -11,7 +11,7 @@ from urllib.request import Request, urlopen
 from langchain_core.tools import tool
 from openai import OpenAI
 
-from .parsers import VIDEO_EXTENSIONS, parse_docx, parse_pdf, parse_pptx, parse_video
+from parsers import VIDEO_EXTENSIONS, parse_docx, parse_pdf, parse_pptx, parse_video
 
 
 SUPPORTED_SOURCE_EXTENSIONS = {".pdf", ".docx", ".txt", ".rtf", *VIDEO_EXTENSIONS}

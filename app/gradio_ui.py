@@ -9,10 +9,10 @@ from typing import Any
 import gradio as gr
 from openai import OpenAI
 
-from .agents import GradingOrchestrator
-from .parsers import parse_submission_file
+from agents import GradingOrchestrator
+from parsers import parse_submission_file
 
-RUBRIC_PATH = Path("data/rubrics.json")
+RUBRIC_PATH = Path("../data/rubrics.json")
 
 
 def _format_result(result: Any) -> str:
@@ -123,7 +123,7 @@ def build_interface() -> gr.Blocks:
 
 def main() -> None:
     demo = build_interface()
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    demo.launch()
 
 
 if __name__ == "__main__":

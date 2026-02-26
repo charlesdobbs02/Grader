@@ -7,13 +7,13 @@ from pathlib import Path
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from openai import OpenAI
 
-from .agents import GradingOrchestrator
-from .models import GradeResponse
-from .parsers import parse_submission_file
+from agents import GradingOrchestrator
+from models import GradeResponse
+from parsers import parse_submission_file
 
 app = FastAPI(title="Agentic Assignment Grader")
 
-RUBRIC_PATH = Path("data/rubrics.json")
+RUBRIC_PATH = Path("../data/rubrics.json")
 
 
 def _require_openai_api_key() -> str:
