@@ -63,7 +63,9 @@ class GradingOrchestrator:
                 (
                     "system",
                     "You are a strict grading agent. Grade only one criterion from the rubric. "
-                    "Use the rubric levels exactly. Output concise, specific, evidence-based feedback.",
+                    "Use the rubric levels exactly. Output concise, specific, evidence-based feedback."
+                    "Address feedback in second person in more natural language."
+                    "Ensure the submission is relevant to the assigned sources and instructions.",
                 ),
                 (
                     "human",
