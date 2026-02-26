@@ -100,7 +100,7 @@ def build_interface() -> gr.Blocks:
                     placeholder="Paste assignment instructions here...",
                 )
                 provided_sources = gr.Textbox(
-                    label="Provided Sources (one per line)",
+                    label="Provided Sources (one per line: URL, file path, or plain text)",
                     lines=8,
                     placeholder="Source 1\nSource 2\nSource 3",
                 )

@@ -13,7 +13,7 @@ FastAPI service that grades student assignments with a multi-agent LangGraph wor
 `POST /grade` (multipart form)
 - `submission_file`: uploaded student file
 - `assignment_instructions`: text instructions
-- `provided_sources`: newline-delimited source URLs
+- `provided_sources`: newline-delimited sources (URL, file path, or plain text)
 
 ## Run
 ```bash
@@ -34,5 +34,20 @@ python -m app.gradio_ui
 Then open `http://localhost:7860`.
 
 
-## Source URL Access
-The grader fetches each URL in `provided_sources` (HTTP/HTTPS), extracts text content, and passes that context to grading agents.
+## Source Access
+The grader supports each `provided_sources` entry as one of: HTTP(S) URL, local `.pdf`/`.docx`/`.txt`/`.rtf`/video file path, or plain text. It extracts text content and passes that context to grading agents.
+
+
+## Workflow Tests (No Frontend)
+Run backend workflow tests without using Gradio:
+```bash
+pytest tests/test_workflow_runner.py
+```
+
+Run the workflow manually using a submission file + instructions txt + sources txt:
+```bash
+python -m app.workflow_runner \
+  --submission tests/fixtures/submission.docx \
+  --instructions tests/fixtures/instructions.txt \
+  --sources tests/fixtures/sources.txt
+```

@@ -21,4 +21,4 @@ dependencies = [
 ]
 
 [tool.uv]
-dev-dependencies = []
+dev-dependencies = ["pytest>=8.0.0"]
