@@ -51,3 +51,13 @@ python -m app.workflow_runner \
   --instructions tests/fixtures/instructions.txt \
   --sources tests/fixtures/sources.txt
 ```
+
+Run multiple submissions concurrently and write a markdown report:
+```bash
+python -m app.workflow_runner \
+  --submission tests/fixtures/submission.docx \
+  --submission path/to/another_student_submission.pdf \
+  --instructions tests/fixtures/instructions.txt \
+  --sources tests/fixtures/sources.txt \
+  --output-markdown grading_report.md
+```
