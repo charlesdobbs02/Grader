@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import time
 import json
 from pathlib import Path
 from typing import TypedDict
@@ -80,16 +80,27 @@ class GradingOrchestrator:
             ]
         )
         structured = self.model.with_structured_output(CriterionGrade)
-        return structured.invoke(
-            grader_prompt.format_messages(
-                criterion=criterion.model_dump_json(indent=2),
-                instructions=assignment_instructions,
-                sources="\n".join(provided_sources) if provided_sources else "None provided",
-                source_context=provided_sources_context,
-                submission=assignment_text,
-                revision_feedback=revision_feedback or "None",
-            )
-        )
+        max_retries = 5
+        retries = 0
+        cont = True
+        while cont:
+            try:
+                return structured.invoke(
+                    grader_prompt.format_messages(
+                        criterion=criterion.model_dump_json(indent=2),
+                        instructions=assignment_instructions,
+                        sources="\n".join(provided_sources) if provided_sources else "None provided",
+                        source_context=provided_sources_context,
+                        submission=assignment_text,
+                        revision_feedback=revision_feedback or "None",
+                    )
+                )
+            except:
+                time.sleep(10)
+                retries += 1
+                if retries >= max_retries:
+                    cont = False
+                continue
 
     def _judge_criterion(
         self,
@@ -115,14 +126,25 @@ class GradingOrchestrator:
             ]
         )
         structured = self.model.with_structured_output(JudgeFeedback)
-        return structured.invoke(
-            judge_prompt.format_messages(
-                criterion=criterion.model_dump_json(indent=2),
-                submission=assignment_text,
-                instructions=assignment_instructions,
-                grade=criterion_grade.model_dump_json(indent=2),
-            )
-        )
+        max_retries = 5
+        retries = 0
+        cont = True
+        while cont:
+            try:
+                return structured.invoke(
+                    judge_prompt.format_messages(
+                        criterion=criterion.model_dump_json(indent=2),
+                        submission=assignment_text,
+                        instructions=assignment_instructions,
+                        grade=criterion_grade.model_dump_json(indent=2),
+                    )
+                )
+            except:
+                time.sleep(10)
+                retries += 1
+                if retries >= max_retries:
+                    cont = False
+                continue
 
     def _finalize_holistic(
         self,
@@ -148,14 +170,25 @@ class GradingOrchestrator:
             ]
         )
         structured = self.model.with_structured_output(HolisticGrade)
-        return structured.invoke(
-            total_prompt.format_messages(
-                assignment_type=assignment_type,
-                instructions=assignment_instructions,
-                submission=assignment_text[:8000],
-                grades=json.dumps([g.model_dump() for g in criteria_grades], indent=2),
-            )
-        )
+        max_retries = 5
+        retries = 0
+        cont = True
+        while cont:
+            try:
+                return structured.invoke(
+                    total_prompt.format_messages(
+                        assignment_type=assignment_type,
+                        instructions=assignment_instructions,
+                        submission=assignment_text,
+                        grades=json.dumps([g.model_dump() for g in criteria_grades], indent=2),
+                    )
+                )
+            except:
+                time.sleep(10)
+                retries += 1
+                if retries >= max_retries:
+                    cont = False
+                continue
 
     def _judge_holistic(
         self,
@@ -178,13 +211,24 @@ class GradingOrchestrator:
             ]
         )
         structured = self.model.with_structured_output(JudgeFeedback)
-        return structured.invoke(
-            judge_prompt.format_messages(
-                assignment_type=assignment_type,
-                criteria=json.dumps([g.model_dump() for g in criteria_grades], indent=2),
-                holistic=holistic.model_dump_json(indent=2),
-            )
-        )
+        max_retries = 5
+        retries = 0
+        cont = True
+        while cont:
+            try:
+                return structured.invoke(
+                    judge_prompt.format_messages(
+                        assignment_type=assignment_type,
+                        criteria=json.dumps([g.model_dump() for g in criteria_grades], indent=2),
+                        holistic=holistic.model_dump_json(indent=2),
+                    )
+                )
+            except:
+                time.sleep(10)
+                retries += 1
+                if retries >= max_retries:
+                    cont = False
+                continue
 
     def _build_graph(self):
         graph = StateGraph(WorkflowState)
@@ -316,9 +360,9 @@ class GradingOrchestrator:
         assignment_type: str,
         assignment_text: str,
         assignment_instructions: str,
-        provided_sources: list[str],
+        provided_sources: str,
     ) -> GradeResponse:
-        source_context = build_sources_context(provided_sources) if provided_sources else "None provided."
+        source_context = provided_sources
 
         final_state = self.graph.invoke(
             {

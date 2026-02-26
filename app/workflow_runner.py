@@ -80,20 +80,23 @@ def build_markdown_report(report_data: dict) -> str:
     lines = ["# Grading Report", "", "## Assignment instructions", "", report_data["assignment_instructions"], ""]
 
     lines.extend(["## Sources (with proof that the source was imported properly)", ""])
-    if report_data["source_proofs"]:
-        for source in report_data["source_proofs"]:
-            source_type = source.get("type", "unknown")
-            lines.append(f"- Source: `{source.get('source', 'unknown')}` ({source_type})")
-            if source.get("ok"):
-                proof_excerpt = (source.get("content") or "")[:250].replace("\n", " ").strip()
-                lines.append(f"  - Imported: ✅")
-                lines.append(f"  - Proof excerpt: `{proof_excerpt}`")
-            else:
-                lines.append(f"  - Imported: ❌")
-                lines.append(f"  - Error: `{source.get('error', 'Unknown error')}`")
-    else:
-        lines.append("- No sources provided.")
-
+    for source in report_data["source_proofs"]:
+        lines.append(source)
+    
+    # if report_data["source_proofs"]:
+    #     for source in report_data["source_proofs"]:
+    #         source_type = source.get("type", "unknown")
+    #         lines.append(f"- Source: `{source.get('source', 'unknown')}` ({source_type})")
+    #         if source.get("ok"):
+    #             proof_excerpt = (source.get("content") or "")[:250].replace("\n", " ").strip()
+    #             lines.append(f"  - Imported: ✅")
+    #             lines.append(f"  - Proof excerpt: `{proof_excerpt}`")
+    #         else:
+    #             lines.append(f"  - Imported: ❌")
+    #             lines.append(f"  - Error: `{source.get('error', 'Unknown error')}`")
+    # else:
+    #     lines.append("- No sources provided.")
+    
     lines.extend(["", "## Results", ""])
     for graded in report_data["results"]:
         result = graded["result"]

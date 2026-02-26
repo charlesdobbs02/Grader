@@ -11,8 +11,12 @@ from openai import OpenAI
 from agents import GradingOrchestrator
 from parsers import parse_submission_file
 from workflow_runner import build_markdown_report
+from source_tools import build_sources_context
 
-RUBRIC_PATH = Path("../data/rubrics.json")
+if __debug__:
+    RUBRIC_PATH = Path("data/rubrics.json")
+else:
+    RUBRIC_PATH = Path("../data/rubrics.json")
 
 
 def _normalize_url_sources(provided_sources: str) -> list[str]:
@@ -27,10 +31,17 @@ def _source_upload_to_entry(source_file: str, client: OpenAI) -> str:
 
 
 def _build_sources(url_text: str, source_files: list[str] | None, client: OpenAI) -> list[str]:
-    sources = _normalize_url_sources(url_text)
-    for source_file in source_files or []:
-        sources.append(_source_upload_to_entry(source_file, client))
-    return sources
+    if len(url_text) > 1:
+        source_urls = _normalize_url_sources(url_text)
+        sources, status = build_sources_context(source_urls)
+    else:
+        sources = []
+        status = []
+    if len(source_files) > 0:
+        sources_files, status_files = build_sources_context(source_files)
+        sources = sources + sources_files
+        status = status + status_files
+    return sources, status
 
 
 def grade_submission_ui(
@@ -53,7 +64,13 @@ def grade_submission_ui(
 
     try:
         orchestrator = GradingOrchestrator(rubric_path=RUBRIC_PATH)
-        sources = _build_sources(source_urls, source_files, client)
+        sources, status = _build_sources(source_urls, source_files, client)
+        status_strings = []
+        for i in range(len(status)):
+            if status[i]:
+                status_strings.append(f"Source {i+1}: Good")
+            else:
+                status_strings.append(f"Source {i+1}: Error")
         graded_results: list[dict[str, Any]] = []
 
         for submission_file in submission_files:
@@ -83,7 +100,7 @@ def grade_submission_ui(
         report_data = {
             "assignment_instructions": assignment_instructions,
             "sources": sources,
-            "source_proofs": [],
+            "source_proofs": status_strings,
             "results": graded_results,
         }
         return build_markdown_report(report_data)

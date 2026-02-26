@@ -7,6 +7,7 @@ from typing import Any
 from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+from bs4 import BeautifulSoup
 
 from langchain_core.tools import tool
 from openai import OpenAI
@@ -18,11 +19,13 @@ SUPPORTED_SOURCE_EXTENSIONS = {".pdf", ".docx", ".txt", ".rtf", *VIDEO_EXTENSION
 
 
 def _strip_html(html: str) -> str:
-    text = re.sub(r"<script[\\s\\S]*?</script>", " ", html, flags=re.IGNORECASE)
-    text = re.sub(r"<style[\\s\\S]*?</style>", " ", text, flags=re.IGNORECASE)
-    text = re.sub(r"<[^>]+>", " ", text)
-    text = unescape(text)
-    return " ".join(text.split())
+    soup = BeautifulSoup(html, "html.parser")
+    return soup.get_text(strip=True, separator=" ")
+    #text = re.sub(r"<script[\\s\\S]*?</script>", " ", html, flags=re.IGNORECASE)
+    #text = re.sub(r"<style[\\s\\S]*?</style>", " ", text, flags=re.IGNORECASE)
+    #text = re.sub(r"<[^>]+>", " ", text)
+    #text = unescape(text)
+    #return " ".join(text.split())
 
 
 def _is_http_url(value: str) -> bool:
@@ -30,7 +33,7 @@ def _is_http_url(value: str) -> bool:
     return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
 
 
-def _download_url_text(url: str, timeout_s: int = 20, max_chars: int = 10000) -> str:
+def _download_url_text(url: str, timeout_s: int = 20, max_chars: int = 1000000) -> str:
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -115,12 +118,15 @@ def fetch_sources_context(items: list[str]) -> list[dict[str, Any]]:
 def build_sources_context(items: list[str]) -> str:
     fetched = fetch_sources_context.invoke({"items": items})
     blocks: list[str] = []
+    status: list[bool] = []
     for item in fetched:
         source_type = item.get("type", "unknown")
         if item["ok"]:
             blocks.append(
                 f"Source ({source_type}): {item['source']}\nExtracted Content:\n{item['content']}"
             )
+            status.append(True)
         else:
             blocks.append(f"Source ({source_type}): {item['source']}\nError: {item['error']}")
-    return "\n\n".join(blocks)
+            status.append(False)
+    return "\n\n".join(blocks), status
