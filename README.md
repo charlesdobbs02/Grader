@@ -13,7 +13,7 @@ FastAPI service that grades student assignments with a multi-agent LangGraph wor
 `POST /grade` (multipart form)
 - `submission_file`: uploaded student file
 - `assignment_instructions`: text instructions
-- `provided_sources`: newline-delimited sources (URL, file path, or plain text)
+- `provided_sources`: newline-delimited sources (URL text or plain text)
 
 ## Run
 ```bash
@@ -35,7 +35,7 @@ Then open `http://localhost:7860`.
 
 
 ## Source Access
-The grader supports each `provided_sources` entry as one of: HTTP(S) URL, local `.pdf`/`.docx`/`.txt`/`.rtf`/video file path, or plain text. It extracts text content and passes that context to grading agents.
+The grader supports each `provided_sources` entry as HTTP(S) URL text or plain text. In the Gradio UI, source context can be supplied as URL text entries and/or uploaded source files.
 
 
 ## Workflow Tests (No Frontend)
