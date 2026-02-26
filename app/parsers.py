@@ -6,12 +6,12 @@ from pathlib import Path
 from typing import Any
 
 from docx import Document
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 from openai import OpenAI
 from pypdf import PdfReader
 from pptx import Presentation
 
-from .models import ParseResult
+from models import ParseResult
 
 
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
