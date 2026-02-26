@@ -8,9 +8,9 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from .agents import GradingOrchestrator
-from .parsers import parse_submission_file
-from .source_tools import fetch_sources_context
+from agents import GradingOrchestrator
+from parsers import parse_submission_file
+from source_tools import fetch_sources_context
 
 
 RUBRIC_PATH = Path("data/rubrics.json")
