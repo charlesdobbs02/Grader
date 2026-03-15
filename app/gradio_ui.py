@@ -11,6 +11,7 @@ from openai import OpenAI
 from agents import GradingOrchestrator
 from parsers import parse_submission_file
 from workflow_runner import build_markdown_report
+from workflow_runner import build_student_result_lines
 from source_tools import build_sources_context
 
 if __debug__:
@@ -55,15 +56,19 @@ def grade_submission_ui(
     assignment_instructions: str,
     source_urls: str,
     source_files: list[str] | None,
-) -> str:
+    progress: gr.Progress = gr.Progress(),
+):
     if not os.getenv("OPENAI_API_KEY"):
-        return "OPENAI_API_KEY is not configured."
+        yield "OPENAI_API_KEY is not configured."
+        return
 
     if not submission_files:
-        return "Please upload at least one submission file."
+        yield "Please upload at least one submission file."
+        return
 
     if not assignment_instructions.strip():
-        return "Please provide assignment instructions."
+        yield "Please provide assignment instructions."
+        return
 
     client = OpenAI()
     temp_paths: list[Path] = []
@@ -79,7 +84,20 @@ def grade_submission_ui(
                 status_strings.append(f"Source {i+1}: Error")
         graded_results: list[dict[str, Any]] = []
 
-        for submission_file in submission_files:
+        total_submissions = len(submission_files)
+        running_report_lines = [
+            "# Grading Report",
+            "",
+            "## Progress",
+            "",
+            f"Processed 0/{total_submissions} submissions.",
+            "",
+            "## Results (streaming)",
+            "",
+        ]
+        yield "\n".join(running_report_lines)
+        for index, submission_file in enumerate(submission_files, start=1):
+            progress((index - 1) / total_submissions, desc=f"Parsing {Path(submission_file).name}")
             original_path = Path(submission_file)
             suffix = original_path.suffix
 
@@ -89,19 +107,22 @@ def grade_submission_ui(
                 temp_paths.append(temp_path)
 
             parsed = parse_submission_file(temp_path, openai_client=client)
+            progress((index - 1) / total_submissions, desc=f"Grading {original_path.name}")
             result = orchestrator.grade_submission(
                 assignment_type=parsed.assignment_type,
                 assignment_text=parsed.extracted_text,
                 assignment_instructions=assignment_instructions,
                 provided_sources=sources,
             )
-            graded_results.append(
-                {
-                    "student_name": original_path.stem,
-                    "submission_file": original_path.name,
-                    "result": result.model_dump(),
-                }
-            )
+            graded_item = {
+                "student_name": original_path.stem,
+                "submission_file": original_path.name,
+                "result": result.model_dump(),
+            }
+            graded_results.append(graded_item)
+            running_report_lines[4] = f"Processed {index}/{total_submissions} submissions."
+            running_report_lines.extend(build_student_result_lines(graded_item))
+            yield "\n".join(running_report_lines)
 
         report_data = {
             "assignment_instructions": assignment_instructions,
@@ -109,9 +130,10 @@ def grade_submission_ui(
             "source_proofs": status_strings,
             "results": graded_results,
         }
-        return build_markdown_report(report_data)
+        progress(1, desc="Completed")
+        yield build_markdown_report(report_data)
     except Exception as exc:  # surface human-readable errors to the UI
-        return f"Error while grading submission: {exc}"
+        yield f"Error while grading submission: {exc}"
     finally:
         for temp_path in temp_paths:
             if temp_path.exists():

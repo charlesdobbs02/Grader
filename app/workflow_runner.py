@@ -81,7 +81,10 @@ def build_markdown_report(report_data: dict) -> str:
 
     lines.extend(["## Sources (with proof that the source was imported properly)", ""])
     for source in report_data["source_proofs"]:
-        lines.append(source)
+        if isinstance(source, str):
+            lines.append(source)
+        else:
+            lines.append(str(source))
     
     # if report_data["source_proofs"]:
     #     for source in report_data["source_proofs"]:
@@ -99,22 +102,29 @@ def build_markdown_report(report_data: dict) -> str:
     
     lines.extend(["", "## Results", ""])
     for graded in report_data["results"]:
-        result = graded["result"]
-        holistic = result["holistic"]
-        lines.append(f"### Student name: {graded['student_name']}")
-        lines.append(f"- Overall grade: {holistic['total_score']}/{holistic['max_total_score']}")
-        lines.append("- Criteria:")
-        for criterion in result["criteria_feedback"]:
-            lines.append(f"  - name: {criterion['criterion_name']}")
-            lines.append(f"    - grade: {criterion['score']}/{criterion['max_points']}")
-            lines.append(f"    - feedback: {criterion['rationale']}")
-            actionable_items = "; ".join(criterion.get("actionable_feedback", [])) or "None"
-            lines.append(f"    - actionable items: {actionable_items}")
-        lines.append(f"- Holistic summary: {holistic['summary']}")
-        lines.append("")
+        lines.extend(build_student_result_lines(graded))
 
     return "\n".join(lines).strip() + "\n"
 
+def build_student_result_lines(graded: dict) -> list[str]:
+    result = graded["result"]
+    holistic = result["holistic"]
+    lines = [
+        f"### Student name: {graded['student_name']}",
+        f"- Overall grade: {holistic['total_score']}/{holistic['max_total_score']}",
+        "- Criteria:",
+    ]
+
+    for criterion in result["criteria_feedback"]:
+        lines.append(f"  - name: {criterion['criterion_name']}")
+        lines.append(f"    - grade: {criterion['score']}/{criterion['max_points']}")
+        lines.append(f"    - feedback: {criterion['rationale']}")
+        actionable_items = "; ".join(criterion.get("actionable_feedback", [])) or "None"
+        lines.append(f"    - actionable items: {actionable_items}")
+
+    lines.append(f"- Holistic summary: {holistic['summary']}")
+    lines.append("")
+    return lines
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run grading workflow from local files")

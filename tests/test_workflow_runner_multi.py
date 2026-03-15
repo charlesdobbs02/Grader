@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from app.workflow_runner import build_markdown_report, grade_multiple_from_files
+from app.workflow_runner import build_markdown_report, build_student_result_lines, grade_multiple_from_files
 
 
 def test_grade_multiple_from_files_aggregates_results(monkeypatch, tmp_path: Path) -> None:
@@ -90,3 +90,28 @@ def test_build_markdown_report_matches_requested_sections() -> None:
     assert "- Overall grade: 9/10" in markdown
     assert "- Criteria:" in markdown
     assert "- Holistic summary: Great work." in markdown
+
+def test_build_student_result_lines_contains_student_grade_breakdown() -> None:
+    graded = {
+        "student_name": "Alex Doe",
+        "result": {
+            "criteria_feedback": [
+                {
+                    "criterion_name": "Citations",
+                    "score": 7,
+                    "max_points": 10,
+                    "rationale": "Several claims need stronger support.",
+                    "actionable_feedback": ["Use 2 additional peer-reviewed sources"],
+                }
+            ],
+            "holistic": {"total_score": 7, "max_total_score": 10, "summary": "Solid start."},
+        },
+    }
+
+    lines = build_student_result_lines(graded)
+    rendered = "\n".join(lines)
+
+    assert "### Student name: Alex Doe" in rendered
+    assert "- Overall grade: 7/10" in rendered
+    assert "  - name: Citations" in rendered
+    assert "- Holistic summary: Solid start." in rendered
