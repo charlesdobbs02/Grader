@@ -39,8 +39,14 @@ def _build_sources(url_text: str, source_files: list[str] | None, client: OpenAI
         status = []
     if len(source_files) > 0:
         sources_files, status_files = build_sources_context(source_files)
-        sources = sources + sources_files
-        status = status + status_files
+        try:
+            sources = sources + sources_files
+        except:
+            sources.append(sources_files)
+        try:
+            status = status + status_files
+        except:
+            status.append(status_files)
     return sources, status
 
 
