@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 import base64
-import imghdr
+import mimetypes
 
 from docx import Document
 from moviepy import VideoFileClip
@@ -18,18 +18,30 @@ from models import ParseResult
 
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
 
-def _guess_image_mime(image_bytes: bytes) -> str:
-    detected = imghdr.what(None, h=image_bytes)
-    if detected:
-        return f"image/{detected}"
+def _guess_image_mime(image_bytes: bytes, filename: str | None = None) -> str:
+    if filename:
+        guessed, _ = mimetypes.guess_type(filename)
+        if guessed and guessed.startswith("image/"):
+            return guessed
+
+    if image_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if image_bytes.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if image_bytes.startswith((b"GIF87a", b"GIF89a")):
+        return "image/gif"
+    if image_bytes.startswith(b"RIFF") and image_bytes[8:12] == b"WEBP":
+        return "image/webp"
+    if image_bytes.startswith((b"II*\x00", b"MM\x00*")):
+        return "image/tiff"
     return "image/png"
 
-def _describe_images_with_openai(images: list[bytes], client: OpenAI | None) -> list[str]:
+def _describe_images_with_openai(images: list[tuple[bytes, str | None]], client: OpenAI | None) -> list[str]:
     if not images:
         return []
 
     descriptions: list[str] = []
-    for i, image_bytes in enumerate(images, start=1):
+    for i, (image_bytes, filename) in enumerate(images, start=1):
         if len(image_bytes) > 5_000_000:
             descriptions.append(f"[Image {i}] Embedded image omitted (file too large to process).")
             continue
@@ -38,7 +50,7 @@ def _describe_images_with_openai(images: list[bytes], client: OpenAI | None) -> 
             descriptions.append(f"[Image {i}] Embedded image extracted from file.")
             continue
 
-        mime_type = _guess_image_mime(image_bytes)
+        mime_type = _guess_image_mime(image_bytes, filename=filename)
         encoded = base64.b64encode(image_bytes).decode("utf-8")
         data_url = f"data:{mime_type};base64,{encoded}"
 
@@ -70,7 +82,10 @@ def parse_docx(path: Path, openai_client: OpenAI | None = None) -> tuple[str, di
     doc = Document(path)
     text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
     image_bytes = [
-        rel.target_part.blob
+        (
+            rel.target_part.blob,
+            str(getattr(getattr(rel, "target_part", None), "partname", "")) or None,
+        )
         for rel in doc.part.rels.values()
         if "image" in rel.reltype and hasattr(rel, "target_part") and hasattr(rel.target_part, "blob")
     ]
@@ -88,12 +103,12 @@ def parse_docx(path: Path, openai_client: OpenAI | None = None) -> tuple[str, di
 def parse_pdf(path: Path, openai_client: OpenAI | None = None) -> tuple[str, dict[str, Any]]:
     reader = PdfReader(str(path))
     pages = [page.extract_text() or "" for page in reader.pages]
-    image_bytes: list[bytes] = []
+    image_bytes: list[tuple[bytes, str | None]] = []
     for page in reader.pages:
         for image in getattr(page, "images", []):
             data = getattr(image, "data", None)
             if data:
-                image_bytes.append(data)
+                image_bytes.append((data, getattr(image, "name", None)))
     image_descriptions = _describe_images_with_openai(image_bytes, openai_client)
     text = "\n".join(pages).strip()
     if image_descriptions:

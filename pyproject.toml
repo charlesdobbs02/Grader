@@ -61,8 +61,7 @@ dependencies = [
   "moviepy>=1.0.3",
   "openai>=1.40.0",
   "python-multipart>=0.0.9",
-  "gradio>=4.44.0",
-  "imghdr"
+  "gradio>=4.44.0"
 ]
 
 [tool.uv]
