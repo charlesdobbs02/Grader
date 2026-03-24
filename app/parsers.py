@@ -4,6 +4,8 @@ import os
 import tempfile
 from pathlib import Path
 from typing import Any
+import base64
+import imghdr
 
 from docx import Document
 from moviepy import VideoFileClip
@@ -16,17 +18,91 @@ from models import ParseResult
 
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
 
+def _guess_image_mime(image_bytes: bytes) -> str:
+    detected = imghdr.what(None, h=image_bytes)
+    if detected:
+        return f"image/{detected}"
+    return "image/png"
 
-def parse_docx(path: Path) -> tuple[str, dict[str, Any]]:
+def _describe_images_with_openai(images: list[bytes], client: OpenAI | None) -> list[str]:
+    if not images:
+        return []
+
+    descriptions: list[str] = []
+    for i, image_bytes in enumerate(images, start=1):
+        if len(image_bytes) > 5_000_000:
+            descriptions.append(f"[Image {i}] Embedded image omitted (file too large to process).")
+            continue
+
+        if client is None:
+            descriptions.append(f"[Image {i}] Embedded image extracted from file.")
+            continue
+
+        mime_type = _guess_image_mime(image_bytes)
+        encoded = base64.b64encode(image_bytes).decode("utf-8")
+        data_url = f"data:{mime_type};base64,{encoded}"
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Describe this embedded assignment image for grading context in 1-2 concise sentences.",
+                            },
+                            {"type": "image_url", "image_url": {"url": data_url}},
+                        ],
+                    }
+                ],
+                max_tokens=140,
+            )
+            content = response.choices[0].message.content or "No description returned."
+            descriptions.append(f"[Image {i}] {content.strip()}")
+        except Exception:
+            descriptions.append(f"[Image {i}] Embedded image extracted from file.")
+
+    return descriptions
+
+def parse_docx(path: Path, openai_client: OpenAI | None = None) -> tuple[str, dict[str, Any]]:
     doc = Document(path)
     text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
-    return text, {"paragraph_count": len(doc.paragraphs)}
+    image_bytes = [
+        rel.target_part.blob
+        for rel in doc.part.rels.values()
+        if "image" in rel.reltype and hasattr(rel, "target_part") and hasattr(rel.target_part, "blob")
+    ]
+    image_descriptions = _describe_images_with_openai(image_bytes, openai_client)
+    combined_text = text
+    if image_descriptions:
+        combined_text = f"{text}\n\nEmbedded Images:\n" + "\n".join(image_descriptions)
+    return combined_text.strip(), {
+        "paragraph_count": len(doc.paragraphs),
+        "image_count": len(image_bytes),
+        "images_described": len(image_descriptions),
+    }
 
 
-def parse_pdf(path: Path) -> tuple[str, dict[str, Any]]:
+def parse_pdf(path: Path, openai_client: OpenAI | None = None) -> tuple[str, dict[str, Any]]:
     reader = PdfReader(str(path))
     pages = [page.extract_text() or "" for page in reader.pages]
-    return "\n".join(pages).strip(), {"page_count": len(reader.pages)}
+    image_bytes: list[bytes] = []
+    for page in reader.pages:
+        for image in getattr(page, "images", []):
+            data = getattr(image, "data", None)
+            if data:
+                image_bytes.append(data)
+    image_descriptions = _describe_images_with_openai(image_bytes, openai_client)
+    text = "\n".join(pages).strip()
+    if image_descriptions:
+        text = f"{text}\n\nEmbedded Images:\n" + "\n".join(image_descriptions)
+    return text.strip(), {
+        "page_count": len(reader.pages),
+        "image_count": len(image_bytes),
+        "images_described": len(image_descriptions),
+    }
 
 
 def parse_pptx(path: Path) -> tuple[str, dict[str, Any]]:
@@ -83,9 +159,9 @@ def parse_submission_file(path: Path, openai_client: OpenAI) -> ParseResult:
     assignment_type = detect_assignment_type(ext)
 
     if ext in {".docx"}:
-        text, metadata = parse_docx(path)
+        text, metadata = parse_docx(path, openai_client=openai_client)
     elif ext in {".pdf"}:
-        text, metadata = parse_pdf(path)
+        text, metadata = parse_pdf(path, openai_client=openai_client)
     elif ext in {".pptx"}:
         text, metadata = parse_pptx(path)
     elif ext in VIDEO_EXTENSIONS:
